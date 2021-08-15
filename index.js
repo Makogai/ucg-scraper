@@ -88,12 +88,14 @@ function getFakultetPrograms(body){
         id = i;
         const name = result.find('.menu-link').text();
         const link = result.find('.menu-link').attr('href');
-        results.push({
-            id,
-            name,
-            link
-        })
-        i++
+        if(link != "#"){
+            results.push({
+                id,
+                name,
+                link
+            })
+            i++
+        }
     })
     return results
 }
