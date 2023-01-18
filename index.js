@@ -6,15 +6,16 @@ const cheerio = require('cheerio')
 
 const app = exporess()
 
+app.set('view engine', 'jade')
+
 app.use(cors())
 
 app.use(morgan('tiny'))
 
 //ROUTES
 app.get('/', (request, response) => {
-    response.json({
-        message: "Hello there"
-    });
+    // return view index.jade
+    response.render('index', { title: 'UCG Scraper' });
 });
 
 function getStudies(body){
@@ -70,10 +71,21 @@ app.get('/fakulteti', (request, response) => {
     fetch(url)
         .then(response => response.text())
         .then(body => {
-            const data = getFakultete(body)
-            response.json({
-                data
-            });
+            let data = getFakultete(body)
+            // response.json({
+            //     data
+            // });
+            data = data.filter((item) => {
+                return item.text != "";
+            })
+            data = data.map((item) =>{
+                return {
+                    name: item.text,
+                    link: item.link,
+                    id: item.link.split("/")[3]
+                }
+            })
+            response.render('fakulteti', { data });
         })
 });
 
@@ -107,9 +119,18 @@ app.get('/fakulteti/:fakultet', (request, response) => {
         .then(response => response.text())
         .then(body => {
             const data = getFakultetPrograms(body)
-            response.json({
-                data
-            });
+            // response.json({
+            //     data
+            // });
+
+            // Get first line from address tag from body using cheerio
+            const $ = cheerio.load(body);
+
+            const fakultetName = $("#header-wrap > div > div > nav > ul > li:nth-child(3) > a > div").text();
+            
+            // const address = $("#header-wrap > div > div > nav > ul > li:nth-child(5) .mega-menu-content > div > div > ul > li:nth-child(1) > a").text();
+
+            response.render('fakultet', { data, fakultetName, fakultet });
         })
 });
 

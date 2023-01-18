@@ -1,0 +1,24 @@
+//- Print all fakulteti using layout.jade
+
+// print json data
+
+extends layout
+
+block content
+    pre= JSON.stringify(data, null, 4)
+
+    table.table.table-striped
+        thead
+        tr
+            th Name
+            th Id
+            th
+        tbody
+        each fakultet in data
+            tr
+            td= fakultet.name
+            td= fakultet.id
+            td
+                a(href='/fakulteti/' + fakultet.id) View
+        
+
